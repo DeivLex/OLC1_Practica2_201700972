@@ -1,29 +1,44 @@
 <html>
     <head>
-        <title>Ejemplo uso de Javascript</title>
+        <title>Practica2_201700972</title>
+        <meta charset="UTF-8">
+        <script>
+            window.addEventListener('load', inicio, false);
+        
+            function inicio() {
+                document.getElementById('archivo').addEventListener('change', cargar, false);               
+            }
+        
+            function cargar(ev) {
+                var arch=new FileReader();
+                arch.addEventListener('load',leer,false);
+                arch.readAsText(ev.target.files[0]);
+            }
+            
+            function leer(ev) {
+                document.getElementById('editor').value=ev.target.result;
+            }
+        </script>
     </head>
     <body onload="main()">
-
-        <div>
-            <h1 id="h1js"></h1>
-            <h2 id="h2js"></h2>
-        </div>
-        
-
-        <div>
-            <h1 id="h1ts"></h1>
-            <h2 id="h2ts"></h2>
-        </div>
         <div>
             <form>
-                <button>Abrir Archivo</button>
-                <button>Guardar Archivo</button>
+                <input type="file" id="archivo">
+                <input type="button" value="Guardar Archivo" onclick="saveTextAsFile()">
+                <button>Analizar Archivo</button>
+                <input type="button" value="Genera una tabla" onclick="genera_tabla()">
             </form> 
         </div>
         <div>
             <form>
-                <textarea name="textarea" rows="10" cols="50">Write something here</textarea>
-                <textarea name="textarea" rows="10" cols="50">Write something here</textarea>
+                <textarea rows="10" cols="80" id="editor">C#</textarea>
+                <textarea name="textarea" rows="10" cols="80">Python</textarea>
+            </form> 
+        </div>
+        <div>
+            <form>
+                <textarea name="textarea" rows="10" cols="80">Html</textarea>
+                <textarea name="textarea" rows="10" cols="80">Json</textarea>
             </form> 
         </div>
         <script src="./withTS/src/practica2.js"></script>
