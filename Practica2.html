@@ -25,8 +25,8 @@
             <form>
                 <input type="file" id="archivo">
                 <input type="button" value="Guardar Archivo" onclick="saveTextAsFile()">
-                <button>Analizar Archivo</button>
-                <input type="button" value="Genera una tabla" onclick="genera_tabla()">
+                <input type="button" value="Analizar Archivo" onclick="analizadorC()">
+                <input type="button" value="Generar tabla de variables" onclick="genera_tabla()">
             </form> 
         </div>
         <div>
@@ -37,10 +37,14 @@
         </div>
         <div>
             <form>
-                <textarea name="textarea" rows="10" cols="80">Html</textarea>
+                <textarea id="editor_html" rows="10" cols="80">Html</textarea>
                 <textarea name="textarea" rows="10" cols="80">Json</textarea>
             </form> 
         </div>
+        <div>
+            <h1 id="h1ts"></h1>
+        </div>
         <script src="./withTS/src/practica2.js"></script>
+        <script src="./withTS/src/AnalizadorLexico.js"></script>
     </body>
 </html>

@@ -60,3 +60,4 @@ function genera_tabla() {
     document.body.appendChild(downloadLink);
     downloadLink.click();
 }
+
