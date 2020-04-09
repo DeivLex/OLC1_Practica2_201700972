@@ -374,6 +374,8 @@ function analizadorC(){
     imprimirLista();
 }
 function analizadorH(texto:string){
+    var fin : Boolean=false;
+    var ListaJson="";
     var aaa = (document.getElementById('editor_html') as HTMLElement);
     aaa.innerHTML=texto;
     listaLexemaH=[];
@@ -390,9 +392,18 @@ function analizadorH(texto:string){
                 }else if(c=='>'){
                     addListH(c,"mayor que");
                     estado=0;
-                }else if(c=='/'){
-                    addListH(c,"division");
+                }else if(c=='='){
+                    addListH(c,"igual");
                     estado=0;
+                }else if(c=='\"'){
+                    addListH(c,"comillas dobles");
+                    estado=0;
+                }else if(c==':'){
+                    addListH(c,"dos puntos");
+                    estado=0;
+                }else if(c.match(isLetra)||c.match(isDigito)){
+                    auxLex+=c;
+                    estado=2;
                 }else if(esEspacio(c)){
                     estado=0;
                 }else{
@@ -400,61 +411,86 @@ function analizadorH(texto:string){
                     estado=0;
                 }
                 break;
-            case 1:
+            case 2:
                 if(c.match(isId)){
                     auxLex+=c;
+                    estado=2;
+                }else if(auxLex.toLowerCase()=="style"){
+                    if(fin==false){
+                        ListaJson+="\"Style\":";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Style");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="background"){
+                    if(fin==false){
+                        ListaJson+="\"background:";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Background");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="yellow"){
+                    if(fin==false){
+                        ListaJson+="yellow\",\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Yellow");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="green"){
+                    if(fin==false){
+                        ListaJson+="green\",\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Green");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="blue"){
+                    if(fin==false){
+                        ListaJson+="blue\",\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Blue");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="red"){
+                    if(fin==false){
+                        ListaJson+="red\",\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Red");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="white"){
+                    if(fin==false){
+                        ListaJson+="white\",\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"White");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="skyblue"){
+                    if(fin==false){
+                        ListaJson+="skyblue\",\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Skyblue");
+                    num=num-1;
+                    estado=0;
+                }else if(c=='<'){
+                    if(fin==false){
+                        ListaJson+="\"Texto\":\""+auxLex+"\"";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Etiqueta")
+                    addListH(c,"menor que");
                     estado=1;
-                }else if(auxLex.toLowerCase()=="html"){
-                    addListH(auxLex,"Html");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="head"){
-                    addListH(auxLex,"Head");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="body"){
-                    addListH(auxLex,"Body");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="title"){
-                    addListH(auxLex,"Title");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="div"){
-                    addListH(auxLex,"Div");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="br"){
-                    addListH(auxLex,"Br");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="p"){
-                    addListH(auxLex,"P");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="h1"){
-                    addListH(auxLex,"H1");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="button"){
-                    addListH(auxLex,"Button");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="label"){
-                    addListH(auxLex,"Label");
-                    num=num-1;
-                    estado=0;
-                }else if(auxLex.toLowerCase()=="input"){
-                    addListH(auxLex,"Input");
-                    num=num-1;
-                    estado=0;
-                }else{
-                    addListH(auxLex,"Etiqueta desconocida");
-                    num=num-1;
-                    estado=0;
+                }else if(esEspacio(c)){
+                    auxLex+=c;
+                    estado=2;
                 }
-                break;
-            case 2:
                 break;
             case 3:
                 break;
@@ -464,16 +500,137 @@ function analizadorH(texto:string){
                 break;
             case 6:
                 break;
+            case 1:
+                if(c.match(isId)){
+                    auxLex+=c;
+                    estado=1;
+                }else if(auxLex.toLowerCase()=="html"){
+                    if(fin==false){
+                        ListaJson+="\"Html\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Html");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="head"){
+                    if(fin==false){
+                        ListaJson+="\"Head\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Head");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="body"){
+                    if(fin==false){
+                        ListaJson+="\"Body\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Body");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="title"){
+                    if(fin==false){
+                        ListaJson+="\"Title\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Title");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="div"){
+                    if(fin==false){
+                        ListaJson+="\"Div\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Div");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="br"){
+                    addListH(auxLex,"Br");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="p"){
+                    if(fin==false){
+                        ListaJson+="\"P\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"P");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="h1"){
+                    if(fin==false){
+                        ListaJson+="\"H1\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"H1");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="h2"){
+                    if(fin==false){
+                        ListaJson+="\"H2\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"H2");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="h3"){
+                    if(fin==false){
+                        ListaJson+="\"H3\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"H3");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="h4"){
+                    if(fin==false){
+                        ListaJson+="\"H4\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"H4");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="button"){
+                    if(fin==false){
+                        ListaJson+="\"Button\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Button");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="label"){
+                    if(fin==false){
+                        ListaJson+="\"Label\":{\n";
+                    }
+                    fin =false;
+                    addListH(auxLex,"Label");
+                    num=num-1;
+                    estado=0;
+                }else if(auxLex.toLowerCase()=="input"){
+                    addListH(auxLex,"Input");
+                    num=num-1;
+                    estado=0;
+                }else if(c=='/'){
+                    fin=true;
+                    ListaJson+="\n}";
+                    addListH(c,"division");
+                    estado=1;
+                }else{
+                    addListH(auxLex,"Etiqueta desconocida");
+                    num=num-1;
+                    estado=0;
+                }
+                break;
         }
     }
+    var bbb = (document.getElementById('editor_json') as HTMLElement);
+    bbb.innerHTML=ListaJson;
 }
 function esEspacio(c:string):boolean{
     return c == '\n' || c== '\t' || c == ' ';
 }
 function imprimirLista(){
     var auxiliar = "Token    -------   Lexema\n";
-    for(var i:number = 0; i < listaLexemaH.length; i++){
-        auxiliar += listaTokenH[i] + "  -------  " + listaLexemaH[i] + "\n";
+    for(var i:number = 0; i < listaLexema.length; i++){
+        auxiliar += listaToken[i] + "  -------  " + listaLexema[i] + "\n";
     }
     h1.innerText = auxiliar;
 }
