@@ -3,8 +3,7 @@
 var body = document.getElementsByTagName("body")[0];
 // Crea un elemento <table> y un elemento <tbody>
 var tabla   = document.createElement("table");
-var tblBody = document.createElement("tbody");
-                       
+var tblBody = document.createElement("tbody");                       
 function genera_tabla() {   
     tblBody.innerHTML = "";
     var hileraP = document.createElement("tr");

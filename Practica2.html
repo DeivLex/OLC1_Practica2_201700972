@@ -20,12 +20,12 @@
             }
         </script>
     </head>
-    <body onload="main()">
+    <body>
         <div>
             <form>
                 <input type="file" id="archivo">
                 <input type="button" value="Guardar Archivo" onclick="saveTextAsFile()">
-                <input type="button" value="Analizar Archivo" onclick="analizadorC()">
+                <input type="button" id="Analizar" value="Analizar Archivo" onclick="analizadorC()">
                 <input type="button" value="Generar tabla de variables" onclick="genera_tabla()">
             </form> 
         </div>
@@ -43,6 +43,7 @@
         </div>
         <div>
             <h1 id="h1ts"></h1>
+            <h1 id="h2ts"></h1>
         </div>
         <script src="./withTS/src/practica2.js"></script>
         <script src="./withTS/src/AnalizadorLexico.js"></script>

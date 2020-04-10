@@ -2,15 +2,20 @@ let listaLexema: Array<string>;
 let listaToken: Array<string>;
 let listaLexemaH: Array<string>;
 let listaTokenH: Array<string>;
+let listaLexemaS: Array<string>;
+let listaTokenS: Array<string>;
 var auxLex="";
 var isId = /^[0-9|a-zA-Z|_]*$/;
 var isLetra = /^[a-zA-Z]$/;
 var isDigito = /^[0-9]$/;
 var h1:HTMLElement = document.getElementById('h1ts') as HTMLElement;
-function analizadorC(){
+var h2:HTMLElement = document.getElementById('h2ts') as HTMLElement;
+function analizadorC(){ 
     var ListaHtml="";
     listaLexema=[];
     listaToken=[];
+    listaLexemaS=[];
+    listaTokenS=[];
     let estado : number = 0;
     var texto = (document.getElementById('editor') as HTMLInputElement).value;
     var c;
@@ -135,7 +140,7 @@ function analizadorC(){
                         estado=0;
                     }  
                 }else if(c.match(isDigito)){
-                    if(texto.charAt(num+1).match(isDigito)){
+                    if(texto.charAt(num+1).match(isDigito)||texto.charAt(num+1)=='.'){
                         auxLex+=c;
                         estado=9;
                     }else{
@@ -175,8 +180,13 @@ function analizadorC(){
                 break;
             case 4:
                 if(c=='*'){
-                    auxLex+=c;
-                    estado=5;  
+                    if(texto.charAt(num+1)=='/'){
+                        auxLex+=c;
+                        estado=5; 
+                    }else{
+                        auxLex+=c;
+                        estado=4;
+                    }
                 }else{
                     auxLex+=c;
                     estado=4;
@@ -187,9 +197,6 @@ function analizadorC(){
                     auxLex+=c;
                     addList(auxLex,"Comentario");
                     estado=0;                    
-                }else{
-                    addList(c,"Error lexico");
-                    estado=0;
                 }
                 break;
             case 6:
@@ -227,6 +234,9 @@ function analizadorC(){
                 break;
             case 9:
                 if(c.match(isDigito)){
+                    auxLex+=c;
+                    estado=9;
+                }else if(c=='.'){
                     auxLex+=c;
                     estado=9;
                 }else{
@@ -275,23 +285,23 @@ function analizadorC(){
                     auxLex+=c;
                     estado=1;
                 }else if(auxLex.toLowerCase()=="int"){
-                    addList(auxLex,"Int");
+                    addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="string"){
-                    addList(auxLex,"String");
+                    addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="double"){
-                    addList(auxLex,"Double");
+                    addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="char"){
-                    addList(auxLex,"Char");
+                    addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="bool"){
-                    addList(auxLex,"Bool");
+                    addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="void"){
@@ -370,8 +380,274 @@ function analizadorC(){
                 break;
         }
     }
-    analizadorH(ListaHtml.toString());
+    //Analisis Sintactico--------------------------------------
+    estado=0;
+    for(var nums:number = 0;nums<listaToken.length;nums++) {
+        c=listaToken[nums].toLowerCase();
+        if(c!='error lexico'&&c!='comentario'&&c!='comillas dobles'&&c!='comillas simples'){
+            switch (estado) {
+                case 0: 
+                    if(c=="tipodato"){
+                        addListS(c,"Aceptado");
+                        estado=1;
+                    }else if(c=="void"){
+                        addListS(c,"Aceptado");
+                        estado=1;
+                    }else if(c=="console"){
+                        addListS(c,"Aceptado");
+                        estado=10;
+                    }else if(c=="llave der"){
+                        addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }  
+                    break;
+                case 1:
+                    if(c=="id"){
+                        addListS(c,"Aceptado");
+                        estado=2;
+                    }else if(c=="main"){
+                        addListS(c,"Aceptado");
+                        estado=9;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 2:
+                    if(c=="coma"){
+                        addListS(c,"Aceptado");
+                        estado=1;
+                    }else if(c=="punto y coma"){
+                        addListS(c,"Aceptado");
+                        estado=0;
+                    }else if(c=="asignacion"){
+                        addListS(c,"Aceptado");
+                        estado=3;
+                    }else if(c=="parentesis izq"){
+                        addListS(c,"Aceptado");
+                        estado=5;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 3:
+                    if(c=="numero"){
+                        addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="texto"){
+                        addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="caracter"){
+                        addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="true"){
+                        addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="false"){
+                        addListS(c,"Aceptado");
+                        estado=4;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 4:
+                    if(c=="suma"){
+                        addListS(c,"Aceptado");
+                        estado=3;
+                    }else if(c=="resta"){
+                        addListS(c,"Aceptado");
+                        estado=3;
+                    }else if(c=="multiplicacion"){
+                        addListS(c,"Aceptado");
+                        estado=3;
+                    }else if(c=="division"){
+                        addListS(c,"Aceptado");
+                        estado=3;
+                    }else if(c=="punto y coma"){
+                        addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 5:
+                    if(c=="tipodato"){
+                        addListS(c,"Aceptado");
+                        estado=6;
+                    }else if(c=="parentesis der"){
+                        addListS(c,"Aceptado");
+                        estado=8;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 6:
+                    if(c=="id"){
+                        addListS(c,"Aceptado");
+                        estado=7;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 7:
+                    if(c=="coma"){
+                        addListS(c,"Aceptado");
+                        estado=5;
+                    }else if(c=="parentesis der"){
+                        addListS(c,"Aceptado");
+                        estado=8;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 8:
+                    if(c=="llave izq"){
+                        addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 9:
+                    if(c=="parentesis izq"){
+                        addListS(c,"Aceptado");
+                        estado=7;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 10:
+                    if(c=="punto"){
+                        addListS(c,"Aceptado");
+                        estado=11;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 11:
+                    if(c=="write"){
+                        addListS(c,"Aceptado");
+                        estado=12;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 12:
+                    if(c=="parentesis izq"){
+                        addListS(c,"Aceptado");
+                        estado=13;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 13:
+                    if(c=="texto"){
+                        addListS(c,"Aceptado");
+                        estado=15;
+                    }else if(c=="numero"){
+                        addListS(c,"Aceptado");
+                        estado=15;
+                    }else if(c=="caracter"){
+                        addListS(c,"Aceptado");
+                        estado=15;
+                    }else if(c=="parentesis der"){
+                        addListS(c,"Aceptado");
+                        estado=14;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 14:
+                    if(c=="punto y coma"){
+                        addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 15:
+                    if(c=="suma"){
+                        addListS(c,"Aceptado");
+                        estado=13;
+                    }else if(c=="resta"){
+                        addListS(c,"Aceptado");
+                        estado=13;
+                    }else if(c=="multiplicacion"){
+                        addListS(c,"Aceptado");
+                        estado=13;
+                    }else if(c=="division"){
+                        addListS(c,"Aceptado");
+                        estado=13;
+                    }else if(c=="parentesis der"){
+                        addListS(c,"Aceptado");
+                        estado=14;
+                    }else{
+                        addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
+                    break;
+                case 16:
+                    break;
+                case 17:
+                    break;
+                case 18:
+                    break;
+                case 19:
+                    break;
+                case 20:
+                    break;
+                case 21:
+                    break;
+                case 22:
+                    break;
+                case 23:
+                    break;
+                case 24:
+                    break;
+                case 25:
+                    break;
+                case 26:
+                    break;
+                case 27:
+                    break;
+                case 28:
+                    break;
+                case 29:
+                    break;
+                case 30:
+                    break;
+                case 31:
+                    break;
+                case 32:
+                    break;
+                case 33:
+                    break;
+                case 34:
+                    break;
+                case 35:
+                    break;
+            }
+        }
+    }
     imprimirLista();
+    imprimirListaS();
+    analizadorH(ListaHtml.toString());
 }
 function analizadorH(texto:string){
     var fin : Boolean=false;
@@ -634,6 +910,13 @@ function imprimirLista(){
     }
     h1.innerText = auxiliar;
 }
+function imprimirListaS(){
+    var auxiliar = "Token    -------   Lexema\n";
+    for(var i:number = 0; i < listaLexemaS.length; i++){
+        auxiliar += listaTokenS[i] + "  -------  " + listaLexemaS[i] + "\n";
+    }
+    h2.innerText = auxiliar;
+}
 function addList(lex:string,token:string):void{
     listaLexema.push(lex);
     listaToken.push(token);
@@ -643,4 +926,8 @@ function addListH(lex:string,token:string):void{
     listaLexemaH.push(lex);
     listaTokenH.push(token);
     auxLex = "";
+}
+function addListS(lex:string,token:string): void{
+    listaLexemaS.push(lex);
+    listaTokenS.push(token);
 }
