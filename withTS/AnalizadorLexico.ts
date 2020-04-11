@@ -4,18 +4,30 @@ let listaLexemaH: Array<string>;
 let listaTokenH: Array<string>;
 let listaLexemaS: Array<string>;
 let listaTokenS: Array<string>;
+let Tabla_de_datos: Array<string>;
+let Linea_de_datos: Array<string>;
+var Tipo_dato="";
+var Nombre_dato="";
+let Linea_dato : number = 1;
 var auxLex="";
 var isId = /^[0-9|a-zA-Z|_]*$/;
 var isLetra = /^[a-zA-Z]$/;
 var isDigito = /^[0-9]$/;
 var h1:HTMLElement = document.getElementById('h1ts') as HTMLElement;
 var h2:HTMLElement = document.getElementById('h2ts') as HTMLElement;
-function analizadorC(){ 
+class analizadorLexico{
+    analizadorC(): void{ 
+    Tipo_dato="";
+    Nombre_dato="";
+    Linea_dato=1;
     var ListaHtml="";
+    var ListaPython="";
     listaLexema=[];
     listaToken=[];
     listaLexemaS=[];
     listaTokenS=[];
+    Tabla_de_datos=[];
+    Linea_de_datos=[];
     let estado : number = 0;
     var texto = (document.getElementById('editor') as HTMLInputElement).value;
     var c;
@@ -24,31 +36,31 @@ function analizadorC(){
         switch (estado) {
             case 0:
                 if(c=='*'){
-                    addList(c,"multiplicacion");
+                    this.addList(c,"multiplicacion");
                     estado=0;
                 }else if(c==String.fromCharCode(92)){
-                    addList(c,"barra izq");
+                    this.addList(c,"barra izq");
                     estado=0;                    
                 }else if(c=='/'){
                     if(texto.charAt(num+1)=='/'||texto.charAt(num+1)=='*'){
                         auxLex+=c;
                         estado=2;
                     }else{
-                        addList(c,"division");
+                        this.addList(c,"division");
                         estado=0;
                     }                       
                 }else if(c==';'){
-                    addList(c,"punto y coma");
+                    this.addList(c,"punto y coma");
                     estado=0;
                 }else if(c==':'){
-                    addList(c,"dos puntos");
+                    this.addList(c,"dos puntos");
                     estado=0;
                 }else if(c=='='){
                     if(texto.charAt(num+1)=='='){
                         auxLex+=c;
                         estado=8;
                     }else{
-                        addList(c,"asignacion");
+                        this.addList(c,"asignacion");
                         estado=0;
                     }
                 }else if(c=='+'){
@@ -56,7 +68,7 @@ function analizadorC(){
                         auxLex+=c;
                         estado=12;
                     }else{
-                        addList(c,"suma");
+                        this.addList(c,"suma");
                         estado=0;
                     }   
                 }else if(c=='-'){
@@ -64,33 +76,33 @@ function analizadorC(){
                         auxLex+=c;
                         estado=13;
                     }else{
-                        addList(c,"resta");
+                        this.addList(c,"resta");
                         estado=0;
                     }
                 }else if(c=='}'){
-                    addList(c,"llave der");
+                    this.addList(c,"llave der");
                     estado=0;
                 }else if(c=='{'){
-                    addList(c,"llave izq");
+                    this.addList(c,"llave izq");
                     estado=0;
                 }else if(c=='('){
-                    addList(c,"parentesis izq");
+                    this.addList(c,"parentesis izq");
                     estado=0;
                 }else if(c==')'){
-                    addList(c,"parentesis der");
+                    this.addList(c,"parentesis der");
                     estado=0;
                 }else if(c==','){
-                    addList(c,"coma");
+                    this.addList(c,"coma");
                     estado=0;
                 }else if(c=='.'){
-                    addList(c,"punto");
+                    this.addList(c,"punto");
                     estado=0;
                 }else if(c=='<'){
                     if(texto.charAt(num+1)=='='){
                         auxLex+=c;
                         estado=8;
                     }else{
-                        addList(c,"menor que");
+                        this.addList(c,"menor que");
                         estado=0;
                     }
                 }else if(c=='>'){
@@ -98,21 +110,21 @@ function analizadorC(){
                         auxLex+=c;
                         estado=8;
                     }else{
-                        addList(c,"mayor que");
+                        this.addList(c,"mayor que");
                         estado=0;
                     }
                 }else if(c=='\"'){
-                    addList(c,"comillas dobles");
+                    this.addList(c,"comillas dobles");
                     estado=10;
                 }else if(c=='\''){
                     if(texto.charAt(num+2)=='\''){
-                        addList(c,"comillas simples");
-                        addList(texto.charAt(num+1),"caracter");
-                        addList(c,"comillas simples");
+                        this.addList(c,"comillas simples");
+                        this.addList(texto.charAt(num+1),"caracter");
+                        this.addList(c,"comillas simples");
                         num=num+2;
                         estado=0;
                     }else{
-                        addList(c,"comillas simples");
+                        this.addList(c,"comillas simples");
                         estado=11;
                     }
                 }else if(c=='|'){
@@ -120,7 +132,7 @@ function analizadorC(){
                         auxLex+=c;
                         estado=6;
                     }else{
-                        addList(c,"barra vertical");
+                        this.addList(c,"barra vertical");
                         estado=0;
                     }     
                 }else if(c=='&'){
@@ -128,7 +140,7 @@ function analizadorC(){
                         auxLex+=c;
                         estado=7;
                     }else{
-                        addList(c,"y");
+                        this.addList(c,"y");
                         estado=0;
                     }  
                 }else if(c=='!'){
@@ -136,7 +148,7 @@ function analizadorC(){
                         auxLex+=c;
                         estado=8;
                     }else{
-                        addList(c,"not");
+                        this.addList(c,"not");
                         estado=0;
                     }  
                 }else if(c.match(isDigito)){
@@ -144,7 +156,7 @@ function analizadorC(){
                         auxLex+=c;
                         estado=9;
                     }else{
-                        addList(c,"numero");
+                        this.addList(c,"numero");
                         estado=0;
                     }
                 }else if(c.match(isLetra)){
@@ -153,10 +165,10 @@ function analizadorC(){
                 }else if(c=='_'){
                     auxLex+=c;
                     estado=1;
-                }else if(esEspacio(c)){
+                }else if(this.esEspacio(c)){
                     estado=0;
                 }else{
-                    addList(c,"Error lexico");
+                    this.addList(c,"Error lexico");
                     estado=0;
                 }
                 break;
@@ -171,7 +183,7 @@ function analizadorC(){
                 break;
             case 3:
                 if(c=='\n'){
-                    addList(auxLex,"Comentario");
+                    this.addList(auxLex,"Comentario");
                     estado=0;  
                 }else{
                     auxLex+=c;
@@ -195,40 +207,40 @@ function analizadorC(){
             case 5:
                 if(c=='/'){
                     auxLex+=c;
-                    addList(auxLex,"Comentario");
+                    this.addList(auxLex,"Comentario");
                     estado=0;                    
                 }
                 break;
             case 6:
                 if(c=='|'){
                     auxLex+=c;
-                    addList(auxLex,"or");
+                    this.addList(auxLex,"or");
                     estado=0;                    
                 }
                 break;
             case 7:
                 if(c=='&'){
                     auxLex+=c;
-                    addList(auxLex,"and");
+                    this.addList(auxLex,"and");
                     estado=0;                    
                 }
                 break;
             case 8:
                 if(texto.charAt(num-1)=='='){
                     auxLex+=c;
-                    addList(auxLex,"igual");
+                    this.addList(auxLex,"igual");
                     estado=0;                    
                 }else if(texto.charAt(num-1)=='!'){
                     auxLex+=c;
-                    addList(auxLex,"distinto");
+                    this.addList(auxLex,"distinto");
                     estado=0; 
                 }else if(texto.charAt(num-1)=='<'){
                     auxLex+=c;
-                    addList(auxLex,"menor igual");
+                    this.addList(auxLex,"menor igual");
                     estado=0; 
                 }else if(texto.charAt(num-1)=='>'){
                     auxLex+=c;
-                    addList(auxLex,"mayor igual");
+                    this.addList(auxLex,"mayor igual");
                     estado=0;
                 }
                 break;
@@ -240,15 +252,15 @@ function analizadorC(){
                     auxLex+=c;
                     estado=9;
                 }else{
-                    addList(auxLex,"numero");
+                    this.addList(auxLex,"numero");
                     num=num-1;
                     estado=0;
                 }
                 break;
             case 10:
                 if(c=='\"'){
-                    addList(auxLex,"texto");
-                    addList(c,"comillas dobles");
+                    this.addList(auxLex,"texto");
+                    this.addList(c,"comillas dobles");
                     estado=0;
                 }else{
                     auxLex+=c;
@@ -258,8 +270,8 @@ function analizadorC(){
             case 11:
                 if(c=='\''){
                     ListaHtml+=auxLex;
-                    addList(auxLex,"html");
-                    addList(c,"comillas dobles");
+                    this.addList(auxLex,"html");
+                    this.addList(c,"comillas dobles");
                     estado=0;
                 }else{
                     auxLex+=c;
@@ -269,14 +281,14 @@ function analizadorC(){
             case 12:
                 if(c=='+'){
                     auxLex+=c;
-                    addList(auxLex,"masmas");
+                    this.addList(auxLex,"masmas");
                     estado=0;                    
                 }
                 break;
             case 13:
                 if(c=='-'){
                     auxLex+=c;
-                    addList(auxLex,"menosmenos");
+                    this.addList(auxLex,"menosmenos");
                     estado=0;                    
                 }
                 break;
@@ -285,95 +297,102 @@ function analizadorC(){
                     auxLex+=c;
                     estado=1;
                 }else if(auxLex.toLowerCase()=="int"){
-                    addList(auxLex,"TipoDato");
+                    Tipo_dato=auxLex;
+                    this.addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="string"){
-                    addList(auxLex,"TipoDato");
+                    Tipo_dato=auxLex;
+                    this.addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="double"){
-                    addList(auxLex,"TipoDato");
+                    Tipo_dato=auxLex;
+                    this.addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="char"){
-                    addList(auxLex,"TipoDato");
+                    Tipo_dato=auxLex;
+                    this.addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="bool"){
-                    addList(auxLex,"TipoDato");
+                    Tipo_dato=auxLex;
+                    this.addList(auxLex,"TipoDato");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="void"){
-                    addList(auxLex,"Void");
+                    this.addList(auxLex,"Void");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="main"){
-                    addList(auxLex,"Main");
+                    this.addList(auxLex,"Main");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="console"){
-                    addList(auxLex,"Console");
+                    this.addList(auxLex,"Console");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="write"){
-                    addList(auxLex,"Write");
+                    this.addList(auxLex,"Write");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="if"){
-                    addList(auxLex,"If");
+                    this.addList(auxLex,"If");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="else"){
-                    addList(auxLex,"Else");
+                    this.addList(auxLex,"Else");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="switch"){
-                    addList(auxLex,"Switch");
+                    this.addList(auxLex,"Switch");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="case"){
-                    addList(auxLex,"Case");
+                    this.addList(auxLex,"Case");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="break"){
-                    addList(auxLex,"Break");
+                    this.addList(auxLex,"Break");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="default"){
-                    addList(auxLex,"Default");
+                    this.addList(auxLex,"Default");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="for"){
-                    addList(auxLex,"For");
+                    this.addList(auxLex,"For");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="while"){
-                    addList(auxLex,"While");
+                    this.addList(auxLex,"While");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="do"){
-                    addList(auxLex,"Do");
+                    this.addList(auxLex,"Do");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="return"){
-                    addList(auxLex,"Return");
+                    this.addList(auxLex,"Return");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="continue"){
-                    addList(auxLex,"Continue");
+                    this.addList(auxLex,"Continue");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="true"){
-                    addList(auxLex,"True");
+                    this.addList(auxLex,"True");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="false"){
-                    addList(auxLex,"False");
+                    this.addList(auxLex,"False");
                     num=num-1;
                     estado=0;
                 }else{
-                    addList(auxLex,"Id");
+                    Nombre_dato=auxLex;
+                    Tabla_de_datos.push(Nombre_dato+","+Tipo_dato+","+Linea_dato);
+                    this.addList(auxLex,"Id");
                     num=num-1;
                     estado=0;
                 }
@@ -386,270 +405,450 @@ function analizadorC(){
         c=listaToken[nums].toLowerCase();
         if(c!='error lexico'&&c!='comentario'&&c!='comillas dobles'&&c!='comillas simples'){
             switch (estado) {
-                case 0: 
-                    if(c=="tipodato"){
-                        addListS(c,"Aceptado");
-                        estado=1;
-                    }else if(c=="void"){
-                        addListS(c,"Aceptado");
-                        estado=1;
-                    }else if(c=="console"){
-                        addListS(c,"Aceptado");
-                        estado=10;
-                    }else if(c=="llave der"){
-                        addListS(c,"Aceptado");
-                        estado=0;
-                    }else{
-                        addListS(c,"Error Sintactico");
-                        estado=0;
-                    }  
-                    break;
                 case 1:
                     if(c=="id"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=2;
                     }else if(c=="main"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=9;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 2:
                     if(c=="coma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=1;
                     }else if(c=="punto y coma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=0;
                     }else if(c=="asignacion"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="parentesis izq"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=5;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 3:
                     if(c=="numero"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="id"){
+                        this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="texto"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="html"){
+                        this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="caracter"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="true"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="false"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=4;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 4:
                     if(c=="suma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="resta"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="multiplicacion"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="division"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="punto y coma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 5:
                     if(c=="tipodato"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=6;
                     }else if(c=="parentesis der"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=8;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 6:
                     if(c=="id"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=7;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 7:
                     if(c=="coma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=5;
                     }else if(c=="parentesis der"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=8;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 8:
                     if(c=="llave izq"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 9:
                     if(c=="parentesis izq"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=7;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 10:
                     if(c=="punto"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=11;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 11:
                     if(c=="write"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=12;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 12:
                     if(c=="parentesis izq"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=13;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 13:
                     if(c=="texto"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
+                        estado=15;
+                    }else if(c=="html"){
+                        this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="numero"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="caracter"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
+                        estado=15;
+                    }else if(c=="id"){
+                        this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="parentesis der"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=14;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 14:
                     if(c=="punto y coma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 15:
                     if(c=="suma"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="resta"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="multiplicacion"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="division"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="parentesis der"){
-                        addListS(c,"Aceptado");
+                        this.addListS(c,"Aceptado");
                         estado=14;
                     }else{
-                        addListS(c,"Error Sintactico");
+                        this.addListS(c,"Error Sintactico");
                         estado=0;
                     }
                     break;
                 case 16:
+                    if(c=="parentesis izq"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 17:
+                    if(c=="texto"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else if(c=="html"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else if(c=="numero"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else if(c=="caracter"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else if(c=="id"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else if(c=="true"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else if(c=="false"){
+                        this.addListS(c,"Aceptado");
+                        estado=18;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 18:
+                    if(c=="mayor que"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="menor que"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="mayor igual"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="menor igual"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="igual"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="distinto"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="and"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="or"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="not"){
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="parentesis der"){
+                        this.addListS(c,"Aceptado");
+                        estado=19;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 19:
+                    if(c=="llave izq"){
+                        this.addListS(c,"Aceptado");
+                        estado=0;
+                    }else if(c=="punto y coma"){
+                        this.addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 20:
+                    if(c=="if"){
+                        this.addListS(c,"Aceptado");
+                        estado=16;
+                    }else if(c=="llave izq"){
+                        this.addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 21:
+                    if(c=="dos puntos"){
+                        this.addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 22:
+                    if(c=="numero"){
+                        this.addListS(c,"Aceptado");
+                        if(listaToken[nums+1]=="punto y coma"){
+                            estado=14;
+                        }else{
+                            estado=21;
+                        }
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 23:
+                    if(c=="mayor que"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="menor que"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="mayor igual"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="menor igual"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="igual"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="distinto"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="asignacion"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 24:
+                    if(c=="parentesis izq"){
+                        this.addListS(c,"Aceptado");
+                        estado=0;
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }
                     break;
                 case 25:
+                    if(c=="masmas"){
+                        this.addListS(c,"Aceptado");
+                        estado=7;
+                    }else if(c=="menosmenos"){
+                        this.addListS(c,"Aceptado");
+                        estado=7;
+                    }
                     break;
-                case 26:
-                    break;
-                case 27:
-                    break;
-                case 28:
-                    break;
-                case 29:
-                    break;
-                case 30:
-                    break;
-                case 31:
-                    break;
-                case 32:
-                    break;
-                case 33:
-                    break;
-                case 34:
-                    break;
-                case 35:
+                case 0: 
+                    if(c=="tipodato"){
+                        this.addListS(c,"Aceptado");
+                        estado=1;
+                    }else if(c=="void"){
+                        this.addListS(c,"Aceptado");
+                        estado=1;
+                    }else if(c=="console"){
+                        this.addListS(c,"Aceptado");
+                        estado=10;
+                    }else if(c=="if"){
+                        this.addListS(c,"Aceptado");
+                        estado=16;
+                    }else if(c=="while"){
+                        this.addListS(c,"Aceptado");
+                        estado=16;
+                    }else if(c=="do"){
+                        this.addListS(c,"Aceptado");
+                        estado=8;
+                    }else if(c=="for"){
+                        this.addListS(c,"Aceptado");
+                        estado=24;
+                    }else if(c=="switch"){
+                        this.addListS(c,"Aceptado");
+                        estado=16;
+                    }else if(c=="else"){
+                        this.addListS(c,"Aceptado");
+                        estado=20;
+                    }else if(c=="return"){
+                        this.addListS(c,"Aceptado");
+                        if(listaToken[nums+1]=="punto y coma"){
+                            estado=14;
+                        }else{
+                            estado=3;
+                        }
+                    }else if(c=="continue"){
+                        this.addListS(c,"Aceptado");
+                        estado=14;
+                    }else if(c=="break"){
+                        this.addListS(c,"Aceptado");
+                        estado=14;
+                    }else if(c=="case"){
+                        this.addListS(c,"Aceptado");
+                        estado=22;
+                    }else if(c=="default"){
+                        this.addListS(c,"Aceptado");
+                        estado=21;
+                    }else if(c=="llave der"){
+                        this.addListS(c,"Aceptado");
+                        estado=0;
+                    }else if(c=="id"){
+                        this.addListS(c,"Aceptado");
+                        if(listaToken[nums+2]=="numero"){
+                            estado=23;
+                        }else if(listaToken[nums+1]=="masmas"||listaToken[nums+1]=="menosmenos"){
+                            estado=25;
+                        }else{
+                            estado=2;
+                        }
+                    }else{
+                        this.addListS(c,"Error Sintactico");
+                        estado=0;
+                    }  
                     break;
             }
         }
     }
-    imprimirLista();
-    imprimirListaS();
-    analizadorH(ListaHtml.toString());
-}
-function analizadorH(texto:string){
+    this.imprimirLista();
+    this.analizadorH(ListaHtml.toString());
+    }
+    analizadorH(texto:string): void{
     var fin : Boolean=false;
     var ListaJson="";
     var aaa = (document.getElementById('editor_html') as HTMLElement);
@@ -663,27 +862,27 @@ function analizadorH(texto:string){
         switch (estado) {
             case 0:
                 if(c=='<'){
-                    addListH(c,"menor que");
+                    this.addListH(c,"menor que");
                     estado=1;
                 }else if(c=='>'){
-                    addListH(c,"mayor que");
+                    this.addListH(c,"mayor que");
                     estado=0;
                 }else if(c=='='){
-                    addListH(c,"igual");
+                    this.addListH(c,"igual");
                     estado=0;
                 }else if(c=='\"'){
-                    addListH(c,"comillas dobles");
+                    this.addListH(c,"comillas dobles");
                     estado=0;
                 }else if(c==':'){
-                    addListH(c,"dos puntos");
+                    this.addListH(c,"dos puntos");
                     estado=0;
                 }else if(c.match(isLetra)||c.match(isDigito)){
                     auxLex+=c;
                     estado=2;
-                }else if(esEspacio(c)){
+                }else if(this.esEspacio(c)){
                     estado=0;
                 }else{
-                    addListH(c,"Error lexico");
+                    this.addListH(c,"Error lexico");
                     estado=0;
                 }
                 break;
@@ -696,7 +895,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"Style\":";
                     }
                     fin =false;
-                    addListH(auxLex,"Style");
+                    this.addListH(auxLex,"Style");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="background"){
@@ -704,7 +903,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"background:";
                     }
                     fin =false;
-                    addListH(auxLex,"Background");
+                    this.addListH(auxLex,"Background");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="yellow"){
@@ -712,7 +911,7 @@ function analizadorH(texto:string){
                         ListaJson+="yellow\",\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Yellow");
+                    this.addListH(auxLex,"Yellow");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="green"){
@@ -720,7 +919,7 @@ function analizadorH(texto:string){
                         ListaJson+="green\",\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Green");
+                    this.addListH(auxLex,"Green");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="blue"){
@@ -728,7 +927,7 @@ function analizadorH(texto:string){
                         ListaJson+="blue\",\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Blue");
+                    this.addListH(auxLex,"Blue");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="red"){
@@ -736,7 +935,7 @@ function analizadorH(texto:string){
                         ListaJson+="red\",\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Red");
+                    this.addListH(auxLex,"Red");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="white"){
@@ -744,7 +943,7 @@ function analizadorH(texto:string){
                         ListaJson+="white\",\n";
                     }
                     fin =false;
-                    addListH(auxLex,"White");
+                    this.addListH(auxLex,"White");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="skyblue"){
@@ -752,7 +951,7 @@ function analizadorH(texto:string){
                         ListaJson+="skyblue\",\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Skyblue");
+                    this.addListH(auxLex,"Skyblue");
                     num=num-1;
                     estado=0;
                 }else if(c=='<'){
@@ -760,10 +959,10 @@ function analizadorH(texto:string){
                         ListaJson+="\"Texto\":\""+auxLex+"\"";
                     }
                     fin =false;
-                    addListH(auxLex,"Etiqueta")
-                    addListH(c,"menor que");
+                    this.addListH(auxLex,"Etiqueta")
+                    this.addListH(c,"menor que");
                     estado=1;
-                }else if(esEspacio(c)){
+                }else if(this.esEspacio(c)){
                     auxLex+=c;
                     estado=2;
                 }
@@ -785,7 +984,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"Html\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Html");
+                    this.addListH(auxLex,"Html");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="head"){
@@ -793,7 +992,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"Head\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Head");
+                    this.addListH(auxLex,"Head");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="body"){
@@ -801,7 +1000,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"Body\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Body");
+                    this.addListH(auxLex,"Body");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="title"){
@@ -809,7 +1008,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"Title\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Title");
+                    this.addListH(auxLex,"Title");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="div"){
@@ -817,11 +1016,11 @@ function analizadorH(texto:string){
                         ListaJson+="\"Div\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Div");
+                    this.addListH(auxLex,"Div");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="br"){
-                    addListH(auxLex,"Br");
+                    this.addListH(auxLex,"Br");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="p"){
@@ -829,7 +1028,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"P\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"P");
+                    this.addListH(auxLex,"P");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="h1"){
@@ -837,7 +1036,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"H1\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"H1");
+                    this.addListH(auxLex,"H1");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="h2"){
@@ -845,7 +1044,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"H2\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"H2");
+                    this.addListH(auxLex,"H2");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="h3"){
@@ -853,7 +1052,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"H3\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"H3");
+                    this.addListH(auxLex,"H3");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="h4"){
@@ -861,7 +1060,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"H4\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"H4");
+                    this.addListH(auxLex,"H4");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="button"){
@@ -869,7 +1068,7 @@ function analizadorH(texto:string){
                         ListaJson+="\"Button\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Button");
+                    this.addListH(auxLex,"Button");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="label"){
@@ -877,20 +1076,20 @@ function analizadorH(texto:string){
                         ListaJson+="\"Label\":{\n";
                     }
                     fin =false;
-                    addListH(auxLex,"Label");
+                    this.addListH(auxLex,"Label");
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="input"){
-                    addListH(auxLex,"Input");
+                    this.addListH(auxLex,"Input");
                     num=num-1;
                     estado=0;
                 }else if(c=='/'){
                     fin=true;
                     ListaJson+="\n}";
-                    addListH(c,"division");
+                    this.addListH(c,"division");
                     estado=1;
                 }else{
-                    addListH(auxLex,"Etiqueta desconocida");
+                    this.addListH(auxLex,"Etiqueta desconocida");
                     num=num-1;
                     estado=0;
                 }
@@ -899,35 +1098,47 @@ function analizadorH(texto:string){
     }
     var bbb = (document.getElementById('editor_json') as HTMLElement);
     bbb.innerHTML=ListaJson;
-}
-function esEspacio(c:string):boolean{
+    }
+    esEspacio(c:string):boolean{
+    if(c == '\n'){
+        Linea_dato++;
+    }
     return c == '\n' || c== '\t' || c == ' ';
-}
-function imprimirLista(){
+    }
+    imprimirLista(): void{
     var auxiliar = "Token    -------   Lexema\n";
     for(var i:number = 0; i < listaLexema.length; i++){
         auxiliar += listaToken[i] + "  -------  " + listaLexema[i] + "\n";
     }
     h1.innerText = auxiliar;
-}
-function imprimirListaS(){
+    }
+    imprimirListaS(): void{
     var auxiliar = "Token    -------   Lexema\n";
     for(var i:number = 0; i < listaLexemaS.length; i++){
         auxiliar += listaTokenS[i] + "  -------  " + listaLexemaS[i] + "\n";
     }
     h2.innerText = auxiliar;
-}
-function addList(lex:string,token:string):void{
+    }
+    addList(lex:string,token:string):void{
     listaLexema.push(lex);
     listaToken.push(token);
+    Linea_de_datos.push(Linea_dato.toString());
     auxLex = "";
-}
-function addListH(lex:string,token:string):void{
+    }
+    addListH(lex:string,token:string):void{
     listaLexemaH.push(lex);
     listaTokenH.push(token);
     auxLex = "";
-}
-function addListS(lex:string,token:string): void{
+    }  
+    addListS(lex:string,token:string): void{
     listaLexemaS.push(lex);
     listaTokenS.push(token);
+    }
+    main(){
+        this.analizadorC();
+    }
+}
+function iniciar(){
+    let p= new analizadorLexico();
+    p.main();
 }

@@ -25,20 +25,21 @@
             <form>
                 <input type="file" id="archivo">
                 <input type="button" value="Guardar Archivo" onclick="saveTextAsFile()">
-                <input type="button" id="Analizar" value="Analizar Archivo" onclick="analizadorC()">
+                <input type="button" id="Analizar" value="Analizar Archivo" onclick="iniciar()">
                 <input type="button" value="Generar tabla de variables" onclick="genera_tabla()">
+                <input type="button" value="Generar tabla de Errores" onclick="genera_reporte()">
             </form> 
         </div>
         <div>
             <form>
                 <textarea rows="10" cols="80" id="editor">C#</textarea>
-                <textarea name="textarea" rows="10" cols="80">Python</textarea>
+                <textarea readonly="readonly" name="textarea" rows="10" cols="80">Python</textarea>
             </form> 
         </div>
         <div>
             <form>
-                <textarea id="editor_html" rows="10" cols="80">Html</textarea>
-                <textarea id="editor_json" rows="10" cols="80">Json</textarea>
+                <textarea readonly="readonly" id="editor_html" rows="10" cols="80">Html</textarea>
+                <textarea readonly="readonly" id="editor_json" rows="10" cols="80">Json</textarea>
             </form> 
         </div>
         <div>
