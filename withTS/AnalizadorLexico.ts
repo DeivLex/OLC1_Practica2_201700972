@@ -13,6 +13,10 @@ var auxLex="";
 var isId = /^[0-9|a-zA-Z|_]*$/;
 var isLetra = /^[a-zA-Z]$/;
 var isDigito = /^[0-9]$/;
+var ListaPython="";
+var FuncionFor=false;
+var FuncionDo=false;
+var FuncionSwitch=false;
 var h1:HTMLElement = document.getElementById('h1ts') as HTMLElement;
 var h2:HTMLElement = document.getElementById('h2ts') as HTMLElement;
 class analizadorLexico{
@@ -21,7 +25,7 @@ class analizadorLexico{
     Nombre_dato="";
     Linea_dato=1;
     var ListaHtml="";
-    var ListaPython="";
+    ListaPython="";
     listaLexema=[];
     listaToken=[];
     listaLexemaS=[];
@@ -183,6 +187,7 @@ class analizadorLexico{
                 break;
             case 3:
                 if(c=='\n'){
+                    Linea_dato++;
                     this.addList(auxLex,"Comentario");
                     estado=0;  
                 }else{
@@ -207,7 +212,7 @@ class analizadorLexico{
             case 5:
                 if(c=='/'){
                     auxLex+=c;
-                    this.addList(auxLex,"Comentario");
+                    this.addList(auxLex,"Multi Comentario");
                     estado=0;                    
                 }
                 break;
@@ -390,8 +395,10 @@ class analizadorLexico{
                     num=num-1;
                     estado=0;
                 }else{
+                    if(texto.charAt(num+1)=='='||c=="="||texto.charAt(num+2)=='='){
                     Nombre_dato=auxLex;
                     Tabla_de_datos.push(Nombre_dato+","+Tipo_dato+","+Linea_dato);
+                    }
                     this.addList(auxLex,"Id");
                     num=num-1;
                     estado=0;
@@ -401,15 +408,25 @@ class analizadorLexico{
     }
     //Analisis Sintactico--------------------------------------
     estado=0;
+    var d="";
+    var Cmain:number = 0;
     for(var nums:number = 0;nums<listaToken.length;nums++) {
         c=listaToken[nums].toLowerCase();
-        if(c!='error lexico'&&c!='comentario'&&c!='comillas dobles'&&c!='comillas simples'){
+        d=listaLexema[nums];
+        if(c!='error lexico'&&c!='comentario'&&c!='comillas dobles'&&c!='comillas simples'&&c!='multi comentario'){
             switch (estado) {
                 case 1:
                     if(c=="id"){
+                        if(FuncionFor==true){
+                            ListaPython+=d+" in range (";
+                        }else{
+                            ListaPython+=d;
+                        }
                         this.addListS(c,"Aceptado");
                         estado=2;
                     }else if(c=="main"){
+                        ListaPython+=d;
+                        Cmain++;
                         this.addListS(c,"Aceptado");
                         estado=9;
                     }else{
@@ -419,15 +436,23 @@ class analizadorLexico{
                     break;
                 case 2:
                     if(c=="coma"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=1;
                     }else if(c=="punto y coma"){
+                        ListaPython+="\n";
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else if(c=="asignacion"){
+                        if(FuncionFor==true){
+                            
+                        }else{
+                            ListaPython+=" "+d+" ";
+                        }
                         this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="parentesis izq"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=5;
                     }else{
@@ -437,24 +462,35 @@ class analizadorLexico{
                     break;
                 case 3:
                     if(c=="numero"){
+                        if(FuncionFor==true){
+                            ListaPython+=d+",";
+                        }else{
+                            ListaPython+=d;
+                        }
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="id"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="texto"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="html"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="caracter"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="true"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else if(c=="false"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
                     }else{
@@ -464,18 +500,27 @@ class analizadorLexico{
                     break;
                 case 4:
                     if(c=="suma"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="resta"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="multiplicacion"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="division"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=3;
                     }else if(c=="punto y coma"){
+                        if(FuncionFor==true){
+                            
+                        }else{
+                            ListaPython+="\n";
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -485,9 +530,11 @@ class analizadorLexico{
                     break;
                 case 5:
                     if(c=="tipodato"){
+                        ListaPython+="var ";
                         this.addListS(c,"Aceptado");
                         estado=6;
                     }else if(c=="parentesis der"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=8;
                     }else{
@@ -497,6 +544,7 @@ class analizadorLexico{
                     break;
                 case 6:
                     if(c=="id"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=7;
                     }else{
@@ -506,9 +554,11 @@ class analizadorLexico{
                     break;
                 case 7:
                     if(c=="coma"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=5;
                     }else if(c=="parentesis der"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=8;
                     }else{
@@ -518,6 +568,10 @@ class analizadorLexico{
                     break;
                 case 8:
                     if(c=="llave izq"){
+                        ListaPython+=":\n";
+                        if(FuncionFor==true){
+                            FuncionFor=false;
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -527,6 +581,7 @@ class analizadorLexico{
                     break;
                 case 9:
                     if(c=="parentesis izq"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=7;
                     }else{
@@ -554,6 +609,7 @@ class analizadorLexico{
                     break;
                 case 12:
                     if(c=="parentesis izq"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=13;
                     }else{
@@ -563,21 +619,27 @@ class analizadorLexico{
                     break;
                 case 13:
                     if(c=="texto"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="html"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="numero"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="caracter"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="id"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=15;
                     }else if(c=="parentesis der"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=14;
                     }else{
@@ -587,6 +649,11 @@ class analizadorLexico{
                     break;
                 case 14:
                     if(c=="punto y coma"){
+                        if(FuncionFor==true){
+                            
+                        }else{
+                            ListaPython+="\n";
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -596,18 +663,23 @@ class analizadorLexico{
                     break;
                 case 15:
                     if(c=="suma"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="resta"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="multiplicacion"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="division"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=13;
                     }else if(c=="parentesis der"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=14;
                     }else{
@@ -617,6 +689,7 @@ class analizadorLexico{
                     break;
                 case 16:
                     if(c=="parentesis izq"){
+                        ListaPython+=" ";
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else{
@@ -626,24 +699,31 @@ class analizadorLexico{
                     break;
                 case 17:
                     if(c=="texto"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else if(c=="html"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else if(c=="numero"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else if(c=="caracter"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else if(c=="id"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else if(c=="true"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else if(c=="false"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
                     }else{
@@ -653,33 +733,47 @@ class analizadorLexico{
                     break;
                 case 18:
                     if(c=="mayor que"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="menor que"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="mayor igual"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="menor igual"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="igual"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="distinto"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="and"){
+                        ListaPython+=c;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="or"){
+                        ListaPython+=c;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="not"){
+                        ListaPython+=c;
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="parentesis der"){
+                        if(FuncionSwitch==true){
+                            ListaPython+=")";
+                        }else{
+                        ListaPython+=" ";
+                        }
                         this.addListS(c,"Aceptado");
                         estado=19;
                     }else{
@@ -689,9 +783,19 @@ class analizadorLexico{
                     break;
                 case 19:
                     if(c=="llave izq"){
+                        ListaPython+=":\n";
+                        if(FuncionSwitch==true){
+                            ListaPython+="switcher = {\n";    
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else if(c=="punto y coma"){
+                        if(FuncionDo==true){
+                            ListaPython+=":\nbreak\n";
+                            FuncionDo=false;
+                        }else{
+                        ListaPython+="\n";
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -701,9 +805,11 @@ class analizadorLexico{
                     break;
                 case 20:
                     if(c=="if"){
+                        ListaPython+="elif";
                         this.addListS(c,"Aceptado");
                         estado=16;
                     }else if(c=="llave izq"){
+                        ListaPython+="else:\n";
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -713,6 +819,7 @@ class analizadorLexico{
                     break;
                 case 21:
                     if(c=="dos puntos"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -722,6 +829,7 @@ class analizadorLexico{
                     break;
                 case 22:
                     if(c=="numero"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         if(listaToken[nums+1]=="punto y coma"){
                             estado=14;
@@ -762,6 +870,11 @@ class analizadorLexico{
                     break;
                 case 24:
                     if(c=="parentesis izq"){
+                        if(FuncionFor==true){
+                            
+                        }else{
+                            ListaPython+=d;
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else{
@@ -780,33 +893,55 @@ class analizadorLexico{
                     break;
                 case 0: 
                     if(c=="tipodato"){
+                        if(listaToken[nums+2]=="parentesis izq"){
+                            ListaPython+="def ";
+                        }else if(FuncionFor==true){
+
+                        }else{
+                            ListaPython+="var ";
+                        }
                         this.addListS(c,"Aceptado");
                         estado=1;
                     }else if(c=="void"){
+                        ListaPython+="def ";
                         this.addListS(c,"Aceptado");
                         estado=1;
                     }else if(c=="console"){
+                        ListaPython+="print";
                         this.addListS(c,"Aceptado");
                         estado=10;
                     }else if(c=="if"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=16;
                     }else if(c=="while"){
+                        if(FuncionDo==true){
+                            ListaPython+="\n"+listaLexema[nums+2]+" = "+listaLexema[nums+2]+" + 1\n\tif";
+                        }else{
+                            ListaPython+=d;
+                        }
                         this.addListS(c,"Aceptado");
                         estado=16;
                     }else if(c=="do"){
+                        FuncionDo=true;
+                        ListaPython+="while True";
                         this.addListS(c,"Aceptado");
                         estado=8;
                     }else if(c=="for"){
+                        FuncionFor=true;
+                        ListaPython+=d+" ";
                         this.addListS(c,"Aceptado");
                         estado=24;
                     }else if(c=="switch"){
+                        ListaPython+="def switch(case,";
+                        FuncionSwitch=true;
                         this.addListS(c,"Aceptado");
                         estado=16;
                     }else if(c=="else"){
                         this.addListS(c,"Aceptado");
                         estado=20;
                     }else if(c=="return"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         if(listaToken[nums+1]=="punto y coma"){
                             estado=14;
@@ -814,21 +949,35 @@ class analizadorLexico{
                             estado=3;
                         }
                     }else if(c=="continue"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=14;
                     }else if(c=="break"){
+                        if(FuncionSwitch=false){
+                            ListaPython+=d;
+                        }
                         this.addListS(c,"Aceptado");
                         estado=14;
                     }else if(c=="case"){
                         this.addListS(c,"Aceptado");
                         estado=22;
                     }else if(c=="default"){
+                        ListaPython+="0";
                         this.addListS(c,"Aceptado");
                         estado=21;
                     }else if(c=="llave der"){
+                        if(FuncionSwitch==true){
+                            ListaPython+="}\n";
+                            FuncionSwitch=false;    
+                        }
                         this.addListS(c,"Aceptado");
                         estado=0;
                     }else if(c=="id"){
+                        if(FuncionFor==true){
+                            
+                        }else{
+                            ListaPython+=d;
+                        }
                         this.addListS(c,"Aceptado");
                         if(listaToken[nums+2]=="numero"){
                             estado=23;
@@ -843,10 +992,24 @@ class analizadorLexico{
                     }  
                     break;
             }
+        }else{
+            if(c=="comentario"){
+                ListaPython+=d.replace("//","#")+"\n";
+            }else if(c=="multi comentario"){
+                ListaPython+=d.replace("/*","\'\'\'").replace("*/","\'\'\'")+"\n";
+            }else if(c=="comillas simples"){
+                ListaPython+=d;
+            }else if(c=="comillas dobles"){
+                ListaPython+=d;
+            }
         }
     }
-    this.imprimirLista();
+    for(var l:number = 0;l<Cmain;l++){
+        ListaPython+="if __name__ = “__main__”:\n\tmain()\n";
+    }
     this.analizadorH(ListaHtml.toString());
+    var ddd = (document.getElementById('editor_python') as HTMLElement);
+    ddd.innerHTML=ListaPython;
     }
     analizadorH(texto:string): void{
     var fin : Boolean=false;
