@@ -493,6 +493,14 @@ class analizadorLexico{
                         ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=4;
+                    }else if(c=="parentesis izq"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=3;
+                    }else if(c=="parentesis der"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=3;
                     }else{
                         this.addListS(c,"Error Sintactico");
                         estado=0;
@@ -515,6 +523,14 @@ class analizadorLexico{
                         ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=3;
+                    }else if(c=="parentesis izq"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=4;
+                    }else if(c=="parentesis der"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=4;
                     }else if(c=="punto y coma"){
                         if(FuncionFor==true){
                             
@@ -682,6 +698,14 @@ class analizadorLexico{
                         ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=14;
+                    }else if(c=="punto y coma"){
+                        if(FuncionFor==true){
+                            
+                        }else{
+                            ListaPython+="\n";
+                        }
+                        this.addListS(c,"Aceptado");
+                        estado=0;
                     }else{
                         this.addListS(c,"Error Sintactico");
                         estado=0;
@@ -726,6 +750,10 @@ class analizadorLexico{
                         ListaPython+=d;
                         this.addListS(c,"Aceptado");
                         estado=18;
+                    }else if(c=="parentesis izq"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=17;
                     }else{
                         this.addListS(c,"Error Sintactico");
                         estado=0;
@@ -769,13 +797,39 @@ class analizadorLexico{
                         this.addListS(c,"Aceptado");
                         estado=17;
                     }else if(c=="parentesis der"){
-                        if(FuncionSwitch==true){
-                            ListaPython+=")";
+                        if(listaToken[nums+1]=="llave izq"||listaToken[nums+1]=="punto y coma"){
+                            if(FuncionSwitch==true){
+                                ListaPython+=")";
+                            }else{
+                                ListaPython+=" ";
+                            }
+                            this.addListS(c,"Aceptado");
+                            estado=19;
                         }else{
-                        ListaPython+=" ";
+                            ListaPython+=d;
+                            this.addListS(c,"Aceptado");
+                            estado=18;
                         }
+                    }else if(c=="suma"){
+                        ListaPython+=d;
                         this.addListS(c,"Aceptado");
-                        estado=19;
+                        estado=17;
+                    }else if(c=="resta"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="multiplicacion"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="division"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=17;
+                    }else if(c=="parentesis izq"){
+                        ListaPython+=d;
+                        this.addListS(c,"Aceptado");
+                        estado=18;
                     }else{
                         this.addListS(c,"Error Sintactico");
                         estado=0;
@@ -833,8 +887,10 @@ class analizadorLexico{
                         this.addListS(c,"Aceptado");
                         if(listaToken[nums+1]=="punto y coma"){
                             estado=14;
-                        }else{
+                        }else if(listaToken[nums+1]=="dos puntos"){
                             estado=21;
+                        }else{
+                            estado=4;
                         }
                     }else{
                         this.addListS(c,"Error Sintactico");
@@ -1010,6 +1066,7 @@ class analizadorLexico{
     this.analizadorH(ListaHtml.toString());
     var ddd = (document.getElementById('editor_python') as HTMLElement);
     ddd.innerHTML=ListaPython;
+    this.imprimirLista();
     }
     analizadorH(texto:string): void{
     var fin : Boolean=false;
@@ -1183,6 +1240,10 @@ class analizadorLexico{
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="br"){
+                    if(fin==false){
+                        ListaJson+="\"BR\":{\n";
+                    }
+                    fin =false;
                     this.addListH(auxLex,"Br");
                     num=num-1;
                     estado=0;
@@ -1243,6 +1304,10 @@ class analizadorLexico{
                     num=num-1;
                     estado=0;
                 }else if(auxLex.toLowerCase()=="input"){
+                    if(fin==false){
+                        ListaJson+="\"INPUT\":{\n";
+                    }
+                    fin =false;
                     this.addListH(auxLex,"Input");
                     num=num-1;
                     estado=0;
@@ -1270,8 +1335,8 @@ class analizadorLexico{
     }
     imprimirLista(): void{
     var auxiliar = "Token    -------   Lexema\n";
-    for(var i:number = 0; i < listaLexema.length; i++){
-        auxiliar += listaToken[i] + "  -------  " + listaLexema[i] + "\n";
+    for(var i:number = 0; i < listaLexemaH.length; i++){
+        auxiliar += listaTokenH[i] + "  -------  " + listaLexemaH[i] + "\n";
     }
     h1.innerText = auxiliar;
     }
