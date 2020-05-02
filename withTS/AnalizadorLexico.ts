@@ -1066,7 +1066,7 @@ class analizadorLexico{
     this.analizadorH(ListaHtml.toString());
     var ddd = (document.getElementById('editor_python') as HTMLElement);
     ddd.innerHTML=ListaPython;
-    this.imprimirLista();
+    //this.imprimirLista();
     }
     analizadorH(texto:string): void{
     var fin : Boolean=false;
@@ -1335,8 +1335,8 @@ class analizadorLexico{
     }
     imprimirLista(): void{
     var auxiliar = "Token    -------   Lexema\n";
-    for(var i:number = 0; i < listaLexemaH.length; i++){
-        auxiliar += listaTokenH[i] + "  -------  " + listaLexemaH[i] + "\n";
+    for(var i:number = 0; i < listaLexema.length; i++){
+        auxiliar += listaToken[i] + "  -------  " + listaLexema[i] + "\n";
     }
     h1.innerText = auxiliar;
     }
